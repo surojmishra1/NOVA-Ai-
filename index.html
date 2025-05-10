@@ -39,6 +39,7 @@
       padding: 10px;
       border-radius: 10px;
       max-width: 80%;
+      word-wrap: break-word;
     }
 
     .message.user {
@@ -109,22 +110,272 @@
       transform: scale(1.2);
     }
 
-    .loud-btn {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 10px 20px;
-      background-color: #2196f3;
-      color: white;
+    /* Code box styles */
+    .code-container {
+      margin: 10px 0;
       border-radius: 5px;
-      cursor: pointer;
-      text-align: center;
-      transition: background-color 0.3s ease;
+      overflow: hidden;
+      background: #1e1e1e;
+      border: 1px solid #444;
     }
 
-    .loud-btn:hover {
-      background-color: #1976d2;
+    .code-header {
+      background: #121212;
+      padding: 5px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #444;
+    }
+
+    .code-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .code-btn {
+      background: #333;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .code-btn:hover {
+      background: #444;
+    }
+
+    .code-btn i {
+      font-size: 14px;
+    }
+
+    .code-content {
+      padding: 10px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      white-space: pre;
+      color: #f8f8f2;
+      background: #1e1e1e;
+      line-height: 1.5;
+    }
+
+    /* Run code iframe */
+    .code-output {
+      margin-top: 10px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background: white;
+      color: black;
+      padding: 10px;
+      display: none;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    /* Language label */
+    .code-lang {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    /* Loading animation */
+    .typing-indicator {
+      display: inline-block;
+      margin-left: 5px;
+    }
+
+    .typing-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #aaa;
+      margin-right: 3px;
+      animation: typing-animation 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing-animation {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      border: 1px solid #444;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      margin-bottom: 15px;
+      color: #2196f3;
+    }
+
+    .modal-message {
+      margin-bottom: 20px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .modal-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .modal-btn-cancel {
+      background-color: #424242;
+      color: white;
+    }
+
+    .modal-btn-confirm {
+      background-color: #2196f3;
+      color: white;
+    }
+
+    /* DeepSeek-like loading screen */
+    .execution-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #121212;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .execution-screen.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .execution-logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, #2196f3, #00bcd4);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+    }
+
+    .execution-progress {
+      width: 200px;
+      height: 4px;
+      background-color: #333;
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .execution-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2196f3, #00bcd4);
+      transition: width 0.3s ease;
+    }
+
+    .execution-status {
+      color: #aaa;
+      font-size: 14px;
+      text-align: center;
+      max-width: 80%;
+    }
+
+    .execution-close-btn {
+      margin-top: 20px;
+      padding: 8px 20px;
+      background-color: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      display: none;
+    }
+
+    /* Wave animation for the logo */
+    @keyframes wave {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+
+    .execution-logo {
+      animation: wave 2s infinite ease-in-out;
+    }
+
+    /* Pulse animation for progress bar */
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .execution-progress-bar {
+      animation: pulse 1.5s infinite ease-in-out;
     }
   </style>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <div class="header">NOVA AI Chat</div>
@@ -151,7 +402,32 @@
     </div>
   </div>
 
+  <!-- Modal for code execution confirmation -->
+  <div id="runModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">NOVA Code Execution</div>
+      <div class="modal-message">Running code can be dangerous. Are you sure you want to execute this code?</div>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-cancel" onclick="hideModal()">Cancel</button>
+        <button class="modal-btn modal-btn-confirm" onclick="confirmRunCode()">Run Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DeepSeek-like execution screen -->
+  <div id="executionScreen" class="execution-screen">
+    <div class="execution-logo">N</div>
+    <div class="execution-progress">
+      <div class="execution-progress-bar" id="executionProgress"></div>
+    </div>
+    <div class="execution-status" id="executionStatus">Initializing code execution environment...</div>
+    <button class="execution-close-btn" id="executionCloseBtn" onclick="hideExecutionScreen()">View Result</button>
+  </div>
+
   <script>
+    // Variables to store code execution context
+    let currentCodeElementId = null;
+    
     async function sendMessage() {
       var input = document.getElementById("input");
       var message = input.value.trim();
@@ -159,14 +435,16 @@
 
       var chat = document.getElementById("chat");
 
+      // Add user message
       var userMessage = document.createElement("div");
       userMessage.className = "message user";
       userMessage.textContent = "You: " + message;
       chat.appendChild(userMessage);
 
+      // Add bot "typing" indicator
       var botMessage = document.createElement("div");
       botMessage.className = "message bot";
-      botMessage.textContent = "NOVA: Thinking...";
+      botMessage.innerHTML = "NOVA: <span class='typing-indicator'><span class='typing-dot'></span><span class='typing-dot'></span><span class='typing-dot'></span></span>";
       chat.appendChild(botMessage);
 
       input.value = "";
@@ -186,27 +464,246 @@
         });
 
         const data = await response.json();
-        const botReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
+        let botReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
 
-        botMessage.textContent = "NOVA: " + botReply;
-
-        // Loud Button
-        var loudButton = document.createElement("div");
-        loudButton.className = "loud-btn";
-        loudButton.textContent = "🎤 Listen";
-        loudButton.onclick = function() { speakText(botReply); };
-        chat.appendChild(loudButton);
-
+        // Process the response to detect and format code blocks
+        botReply = processCodeBlocks(botReply);
+        
+        // Create a container for the bot's response
+        const responseContainer = document.createElement("div");
+        responseContainer.className = "message bot";
+        responseContainer.innerHTML = "NOVA: " + botReply;
+        
+        // Replace the typing indicator with the actual response
+        botMessage.replaceWith(responseContainer);
+        
       } catch (error) {
-        botMessage.textContent = "NOVA: Sorry, I couldn't get a response.";
+        botMessage.innerHTML = "NOVA: Sorry, I couldn't get a response.";
         console.error('Error:', error);
+      } finally {
+        chat.scrollTop = chat.scrollHeight;
       }
     }
 
-    function speakText(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      speechSynthesis.speak(utterance);
+    function processCodeBlocks(text) {
+      // This regex matches code blocks between ```lang and ```
+      const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+      
+      let processedText = text;
+      let match;
+      let lastIndex = 0;
+      const parts = [];
+      
+      // Find all code blocks in the text
+      while ((match = codeBlockRegex.exec(text)) !== null) {
+        // Add text before the code block
+        if (match.index > lastIndex) {
+          parts.push(escapeHtml(text.substring(lastIndex, match.index)));
+        }
+        
+        const language = match[1] || 'plaintext';
+        const code = match[2];
+        
+        // Create HTML for the code block
+        const codeBlockId = 'code-' + Math.random().toString(36).substr(2, 9);
+        const codeBlockHTML = `
+          <div class="code-container">
+            <div class="code-header">
+              <span class="code-lang">${language}</span>
+              <div class="code-actions">
+                <button class="code-btn" onclick="copyCode('${codeBlockId}')">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+                <button class="code-btn" onclick="downloadCode('${codeBlockId}', '${language}')">
+                  <i class="fas fa-download"></i> Download
+                </button>
+                ${language === 'html' || language === 'javascript' ? 
+                  `<button class="code-btn" onclick="showRunModal('${codeBlockId}')">
+                    <i class="fas fa-play"></i> Run
+                  </button>` : ''}
+              </div>
+            </div>
+            <div id="${codeBlockId}" class="code-content">${escapeHtml(code)}</div>
+            ${language === 'html' || language === 'javascript' ? 
+              `<div id="${codeBlockId}-output" class="code-output"></div>` : ''}
+          </div>
+        `;
+        
+        parts.push(codeBlockHTML);
+        lastIndex = codeBlockRegex.lastIndex;
+      }
+      
+      // Add remaining text after the last code block
+      if (lastIndex < text.length) {
+        parts.push(escapeHtml(text.substring(lastIndex)));
+      }
+      
+      // If no code blocks were found, return the original text
+      if (parts.length === 0) {
+        return escapeHtml(text);
+      }
+      
+      return parts.join('');
+    }
+
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+        .replace(/\n/g, "<br>");
+    }
+
+    function copyCode(elementId) {
+      const codeElement = document.getElementById(elementId);
+      const textToCopy = codeElement.textContent;
+      
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast('Code copied to clipboard!');
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+        showToast('Failed to copy code');
+      });
+    }
+
+    function downloadCode(elementId, language) {
+      const codeElement = document.getElementById(elementId);
+      const code = codeElement.textContent;
+      const blob = new Blob([code], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `code.${language || 'txt'}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Code downloaded!');
+    }
+
+    function showRunModal(elementId) {
+      currentCodeElementId = elementId;
+      document.getElementById('runModal').style.display = 'flex';
+    }
+
+    function hideModal() {
+      document.getElementById('runModal').style.display = 'none';
+      currentCodeElementId = null;
+    }
+
+    function confirmRunCode() {
+      if (currentCodeElementId) {
+        showExecutionScreen();
+        // Simulate loading with different status messages
+        simulateExecutionProgress();
+      }
+      hideModal();
+    }
+
+    function showExecutionScreen() {
+      const screen = document.getElementById('executionScreen');
+      screen.classList.add('active');
+      document.getElementById('executionCloseBtn').style.display = 'none';
+    }
+
+    function hideExecutionScreen() {
+      const screen = document.getElementById('executionScreen');
+      screen.classList.remove('active');
+    }
+
+    function simulateExecutionProgress() {
+      const progressBar = document.getElementById('executionProgress');
+      const statusText = document.getElementById('executionStatus');
+      const closeBtn = document.getElementById('executionCloseBtn');
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 10;
+        if (progress > 100) progress = 100;
+        progressBar.style.width = progress + '%';
+        
+        // Update status text based on progress
+        if (progress < 30) {
+          statusText.textContent = "Initializing code execution environment...";
+        } else if (progress < 60) {
+          statusText.textContent = "Analyzing code structure...";
+        } else if (progress < 90) {
+          statusText.textContent = "Executing code...";
+        } else {
+          statusText.textContent = "Finalizing results...";
+        }
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            statusText.textContent = "Execution complete!";
+            closeBtn.style.display = 'block';
+            // Actually run the code after the animation
+            runCode(currentCodeElementId);
+          }, 500);
+        }
+      }, 200);
+    }
+
+    function runCode(elementId) {
+      const codeElement = document.getElementById(elementId);
+      const outputElement = document.getElementById(elementId + '-output');
+      const code = codeElement.textContent;
+      
+      try {
+        if (code.includes('<html') || code.includes('<body') || code.includes('<head')) {
+          // For HTML code, create a new iframe
+          outputElement.innerHTML = '';
+          const iframe = document.createElement('iframe');
+          iframe.style.width = '100%';
+          iframe.style.height = '300px';
+          iframe.style.border = 'none';
+          outputElement.appendChild(iframe);
+          iframe.contentDocument.open();
+          iframe.contentDocument.write(code);
+          iframe.contentDocument.close();
+        } else {
+          // For JavaScript code, eval it (with caution)
+          outputElement.textContent = '';
+          const result = eval(code);
+          if (result !== undefined) {
+            outputElement.textContent = 'NOVA: Code executed successfully!\nResult: ' + result;
+          } else {
+            outputElement.textContent = 'NOVA: Code executed successfully (no return value)';
+          }
+        }
+        outputElement.style.display = 'block';
+      } catch (error) {
+        outputElement.textContent = 'NOVA: Error executing code:\n' + error.message;
+        outputElement.style.display = 'block';
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.textContent = message;
+      toast.style.position = 'fixed';
+      toast.style.bottom = '20px';
+      toast.style.left = '50%';
+      toast.style.transform = 'translateX(-50%)';
+      toast.style.backgroundColor = '#2196f3';
+      toast.style.color = 'white';
+      toast.style.padding = '10px 20px';
+      toast.style.borderRadius = '5px';
+      toast.style.zIndex = '1000';
+      toast.style.boxShadow = '0 2px 10px rgba(0,0,0,0.2)';
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+          document.body.removeChild(toast);
+        }, 500);
+      }, 3000);
     }
   </script>
 </body>
-</html>
+  </html>
