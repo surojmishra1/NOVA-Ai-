@@ -4,808 +4,383 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>NOVA AI Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #6e48aa;
+      --primary-dark: #4a2d7a;
+      --secondary: #9d50bb;
+      --bg-dark: #121212;
+      --bg-darker: #0d0d0d;
+      --bg-light: #1e1e1e;
+      --text-primary: #ffffff;
+      --text-secondary: #b3b3b3;
+      --user-bubble: #6e48aa;
+      --bot-bubble: #2d2d2d;
+      --border: #333333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
       display: flex;
       flex-direction: column;
       height: 100vh;
+      overflow: hidden;
     }
 
-    .header {
+    /* REPLACED HEADER WITH IMAGE */
+    .image-header {
       text-align: center;
-      background-color: #1e1e1e;
-      padding: 15px;
-      font-size: 24px;
-      font-weight: bold;
-      border-bottom: 2px solid #444;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      padding: 10px;
+    }
+    .image-header a {
+      display: inline-block;
+    }
+    .image-header img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+    }
+    .image-header img:hover {
+      transform: scale(1.02);
+    }
+
+    .chat-container {
+      flex: 1;
+      overflow: hidden;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .auth-section {
-      display: flex;
-      gap: 10px;
-    }
-
-    .auth-btn {
-      padding: 5px 10px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .login-btn {
-      background-color: #4285F4;
-      color: white;
-    }
-
-    .logout-btn {
-      background-color: #EA4335;
-      color: white;
-    }
-
-    .premium-btn {
-      background-color: #FFC107;
-      color: #121212;
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .user-avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
+      flex-direction: column;
     }
 
     .chat-box {
       flex: 1;
-      padding: 15px;
+      padding: 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+      background: var(--bg-darker);
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) var(--bg-light);
+    }
+
+    .chat-box::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-box::-webkit-scrollbar-track {
+      background: var(--bg-light);
+    }
+
+    .chat-box::-webkit-scrollbar-thumb {
+      background-color: var(--primary);
+      border-radius: 3px;
     }
 
     .message {
       margin: 8px 0;
-      padding: 10px;
-      border-radius: 10px;
-      max-width: 80%;
-      word-wrap: break-word;
+      padding: 12px 16px;
+      border-radius: 18px;
+      max-width: 85%;
+      line-height: 1.5;
+      position: relative;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.3s ease forwards;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .message.user {
-      background-color: #2196f3;
+      background: var(--user-bubble);
+      color: white;
       align-self: flex-end;
+      border-bottom-right-radius: 4px;
     }
 
     .message.bot {
-      background-color: #424242;
+      background: var(--bot-bubble);
+      color: var(--text-primary);
       align-self: flex-start;
+      border-bottom-left-radius: 4px;
     }
 
-    .message.premium {
-      border: 2px solid gold;
-      position: relative;
+    .message.greeting {
+      opacity: 1;
+      transform: none;
+      animation: none;
     }
 
-    .premium-badge {
-      position: absolute;
-      top: -10px;
-      right: -10px;
-      background-color: gold;
-      color: #121212;
-      border-radius: 50%;
-      width: 20px;
+    .message-typing {
+      display: inline-flex;
+      align-items: center;
       height: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .input-area {
-      background-color: #1e1e1e;
-      padding: 10px;
-      border-top: 2px solid #444;
-      box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
-    }
-
-    .input-box {
-      display: flex;
-    }
-
-    .input-box input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      outline: none;
-      border-radius: 5px;
-      font-size: 16px;
-      background: #2c2c2c;
-      color: #fff;
-    }
-
-    .input-box button {
-      padding: 0 15px;
-      margin-left: 10px;
-      font-size: 20px;
-      background-color: #2196f3;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .input-box button:hover {
-      background-color: #1976d2;
-    }
-
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 10px 0;
-      border-top: 1px solid #444;
-      background-color: #1e1e1e;
-    }
-
-    .social-links a img {
-      width: 30px;
-      height: 30px;
-      filter: brightness(0) invert(1);
-      transition: transform 0.2s ease;
-    }
-
-    .social-links a img:hover {
-      transform: scale(1.2);
-    }
-
-    /* Code box styles */
-    .code-container {
-      margin: 10px 0;
-      border-radius: 5px;
-      overflow: hidden;
-      background: #1e1e1e;
-      border: 1px solid #444;
-    }
-
-    .code-header {
-      background: #121212;
-      padding: 5px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #444;
-    }
-
-    .code-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .code-btn {
-      background: #333;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .code-btn:hover {
-      background: #444;
-    }
-
-    .code-btn i {
-      font-size: 14px;
-    }
-
-    .code-content {
-      padding: 10px;
-      overflow-x: auto;
-      font-family: 'Courier New', monospace;
-      white-space: pre;
-      color: #f8f8f2;
-      background: #1e1e1e;
-      line-height: 1.5;
-    }
-
-    /* Run code iframe */
-    .code-output {
-      margin-top: 10px;
-      border: 1px solid #444;
-      border-radius: 5px;
-      background: white;
-      color: black;
-      padding: 10px;
-      display: none;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    /* Language label */
-    .code-lang {
-      font-size: 12px;
-      color: #aaa;
-    }
-
-    /* Loading animation */
-    .typing-indicator {
-      display: inline-block;
-      margin-left: 5px;
     }
 
     .typing-dot {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
+      width: 8px;
+      height: 8px;
+      background: var(--text-secondary);
       border-radius: 50%;
-      background-color: #aaa;
-      margin-right: 3px;
-      animation: typing-animation 1.4s infinite ease-in-out;
+      margin: 0 2px;
+      animation: typingAnimation 1.4s infinite ease-in-out;
     }
 
     .typing-dot:nth-child(1) {
       animation-delay: 0s;
     }
-
     .typing-dot:nth-child(2) {
       animation-delay: 0.2s;
     }
-
     .typing-dot:nth-child(3) {
       animation-delay: 0.4s;
     }
 
-    @keyframes typing-animation {
+    @keyframes typingAnimation {
       0%, 60%, 100% { transform: translateY(0); }
       30% { transform: translateY(-5px); }
     }
 
-    /* Modal styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.7);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 500px;
-      width: 90%;
-      border: 1px solid #444;
-    }
-
-    .modal-title {
-      font-size: 18px;
-      margin-bottom: 15px;
-      color: #2196f3;
-    }
-
-    .modal-message {
-      margin-bottom: 20px;
-    }
-
-    .modal-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-
-    .modal-btn {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .modal-btn-cancel {
-      background-color: #424242;
-      color: white;
-    }
-
-    .modal-btn-confirm {
-      background-color: #2196f3;
-      color: white;
-    }
-
-    /* DeepSeek-like loading screen */
-    .execution-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #121212;
-      z-index: 2000;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .execution-screen.active {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .execution-logo {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 30px;
-      background: linear-gradient(135deg, #2196f3, #00bcd4);
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-size: 40px;
-      font-weight: bold;
-    }
-
-    .execution-progress {
-      width: 200px;
-      height: 4px;
-      background-color: #333;
-      border-radius: 2px;
-      overflow: hidden;
-      margin-bottom: 20px;
-    }
-
-    .execution-progress-bar {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #2196f3, #00bcd4);
-      transition: width 0.3s ease;
-    }
-
-    .execution-status {
-      color: #aaa;
-      font-size: 14px;
-      text-align: center;
-      max-width: 80%;
-    }
-
-    .execution-close-btn {
-      margin-top: 20px;
-      padding: 8px 20px;
-      background-color: #2196f3;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      display: none;
-    }
-
-    /* Wave animation for the logo */
-    @keyframes wave {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-15px);
-      }
-    }
-
-    .execution-logo {
-      animation: wave 2s infinite ease-in-out;
-    }
-
-    /* Pulse animation for progress bar */
-    @keyframes pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
-    }
-
-    .execution-progress-bar {
-      animation: pulse 1.5s infinite ease-in-out;
-    }
-
-    /* Premium features modal */
-    .premium-features {
-      margin-top: 20px;
-    }
-
-    .feature-list {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    .feature-item {
-      padding: 8px 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .feature-item i {
-      color: gold;
-    }
-
-    .pricing-plans {
-      display: flex;
-      gap: 15px;
-      margin-top: 20px;
-    }
-
-    .plan-card {
-      flex: 1;
-      border: 1px solid #444;
-      border-radius: 8px;
+    .input-area {
+      background: var(--bg-light);
       padding: 15px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.3s;
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
     }
 
-    .plan-card:hover {
-      border-color: gold;
-      transform: translateY(-5px);
+    .input-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg-dark);
+      border-radius: 25px;
+      padding: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .plan-card.selected {
-      border-color: gold;
-      background-color: rgba(255, 215, 0, 0.1);
+    .input-box input {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      background: transparent;
+      color: var(--text-primary);
+      border-radius: 25px;
     }
 
-    .plan-name {
-      font-weight: bold;
-      margin-bottom: 10px;
+    .input-box input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.7;
     }
 
-    .plan-price {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    .plan-features {
-      font-size: 14px;
-      color: #aaa;
-    }
-
-    /* Toast notification */
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #2196f3;
+    .input-box button {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      opacity: 0;
-      transition: opacity 0.5s;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
-    .toast.show {
-      opacity: 1;
+    .input-box button:hover {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      transform: translateY(-2px);
+    }
+
+    .input-box button:active {
+      transform: translateY(0);
+    }
+
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      padding: 15px 0 5px;
+    }
+
+    .social-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-3px);
+    }
+
+    .social-links a img {
+      width: 20px;
+      height: 20px;
+      filter: brightness(0) invert(1);
+    }
+
+    .timestamp {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    @media (max-width: 600px) {
+      .message {
+        max-width: 90%;
+        padding: 10px 14px;
+      }
+      
+      .input-box input {
+        padding: 10px 16px;
+        font-size: 15px;
+      }
+      
+      .input-box button {
+        width: 42px;
+        height: 42px;
+      }
     }
   </style>
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Identity Services library -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <div class="header">
-    <div>NOVA AI Chat</div>
-    <div class="auth-section" id="authSection">
-      <button id="loginBtn" class="auth-btn login-btn" onclick="showLoginModal()">
-        <i class="fab fa-google"></i> Sign In
-      </button>
-      <button id="premiumBtn" class="auth-btn premium-btn" onclick="showPremiumModal()" style="display: none;">
-        <i class="fas fa-crown"></i> Go Premium
-      </button>
-      <button id="logoutBtn" class="auth-btn logout-btn" onclick="logout()" style="display: none;">
-        <i class="fas fa-sign-out-alt"></i> Sign Out
-      </button>
-    </div>
+  <!-- REPLACED HEADER WITH YOUR IMAGE -->
+  <div class="image-header">
+    <a href="https://www.mediafire.com/file/p1aeomhouzujf3j/GUES+THE+FALG.apk/file" target="_blank">
+      <img src="https://i.ibb.co/xttTCVWY/wmremove-transformed.jpg" alt="Download Guess The Flag APK">
+    </a>
   </div>
 
-  <div id="chat" class="chat-box">
-    <div class="message bot greeting">NOVA: Hello! How can I help you today?</div>
+  <div class="chat-container">
+    <div id="chat" class="chat-box">
+      <div class="message bot greeting">
+        <div>NOVA: Hello! I'm your AI assistant. How can I help you today?</div>
+        <div class="timestamp">Just now</div>
+      </div>
+    </div>
   </div>
 
   <div class="input-area">
     <div class="input-box">
       <input type="text" id="input" placeholder="Type your message..." onkeydown="if(event.key==='Enter'){ sendMessage(); }"/>
-      <button onclick="sendMessage()" title="Send">&#x1F4E7;</button>
+      <button onclick="sendMessage()" title="Send">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
     <div class="social-links">
-      <a href="https://www.instagram.com/suroj_mishra18?igsh=OTd3eDZ2aHZmcDc=" target="_blank">
+      <a href="https://www.instagram.com/suroj_mishra18?igsh=OTd3eDZ2aHZmcDc=" target="_blank" title="Instagram">
         <img src="https://img.icons8.com/ios-filled/50/ffffff/instagram-new.png" alt="Instagram"/>
       </a>
-      <a href="https://youtube.com/@surojff10m?si=_yCZghjqK9bJKyda" target="_blank">
+      <a href="https://youtube.com/@surojff10m?si=_yCZghjqK9bJKyda" target="_blank" title="YouTube">
         <img src="https://img.icons8.com/ios-filled/50/ffffff/youtube-play.png" alt="YouTube"/>
       </a>
-      <a href="https://www.facebook.com/share/15RPpu6zL7/" target="_blank">
+      <a href="https://www.facebook.com/share/15RPpu6zL7/" target="_blank" title="Facebook">
         <img src="https://img.icons8.com/ios-filled/50/ffffff/facebook-new.png" alt="Facebook"/>
       </a>
     </div>
   </div>
 
-  <!-- Modal for code execution confirmation -->
-  <div id="runModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-title">NOVA Code Execution</div>
-      <div class="modal-message">Running code can be dangerous. Are you sure you want to execute this code?</div>
-      <div class="modal-buttons">
-        <button class="modal-btn modal-btn-cancel" onclick="hideModal()">Cancel</button>
-        <button class="modal-btn modal-btn-confirm" onclick="confirmRunCode()">Run Code</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- DeepSeek-like execution screen -->
-  <div id="executionScreen" class="execution-screen">
-    <div class="execution-logo">N</div>
-    <div class="execution-progress">
-      <div class="execution-progress-bar" id="executionProgress"></div>
-    </div>
-    <div class="execution-status" id="executionStatus">Initializing code execution environment...</div>
-    <button class="execution-close-btn" id="executionCloseBtn" onclick="hideExecutionScreen()">View Result</button>
-  </div>
-
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-title">Sign In with Google</div>
-      <div class="modal-message">Please sign in to access premium features and track your subscription.</div>
-      <div id="googleSignInButton" style="margin: 20px 0;"></div>
-      <div class="modal-buttons">
-        <button class="modal-btn modal-btn-cancel" onclick="hideLoginModal()">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Premium Features Modal -->
-  <div id="premiumModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-title">NOVA Premium</div>
-      <div class="modal-message">Upgrade to premium for exclusive features and enhanced capabilities.</div>
-      
-      <div class="premium-features">
-        <h3>Premium Features:</h3>
-        <ul class="feature-list">
-          <li class="feature-item"><i class="fas fa-check-circle"></i> Priority access to new features</li>
-          <li class="feature-item"><i class="fas fa-check-circle"></i> Faster response times</li>
-          <li class="feature-item"><i class="fas fa-check-circle"></i> Advanced code execution</li>
-          <li class="feature-item"><i class="fas fa-check-circle"></i> Longer conversation memory</li>
-          <li class="feature-item"><i class="fas fa-check-circle"></i> Exclusive premium badge</li>
-        </ul>
-      </div>
-
-      <div class="pricing-plans">
-        <div class="plan-card" onclick="selectPlan('monthly')" id="monthlyPlan">
-          <div class="plan-name">Monthly</div>
-          <div class="plan-price">$9.99</div>
-          <div class="plan-features">Billed monthly</div>
-        </div>
-        <div class="plan-card" onclick="selectPlan('yearly')" id="yearlyPlan">
-          <div class="plan-name">Yearly</div>
-          <div class="plan-price">$99.99</div>
-          <div class="plan-features">Save 16%</div>
-        </div>
-      </div>
-
-      <div class="modal-buttons">
-        <button class="modal-btn modal-btn-cancel" onclick="hidePremiumModal()">Cancel</button>
-        <button class="modal-btn modal-btn-confirm" onclick="subscribe()" id="subscribeBtn">Subscribe</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast notification element -->
-  <div id="toast" class="toast"></div>
-
   <script>
-    // Variables to store code execution context
-    let currentCodeElementId = null;
-    let currentUser = null;
-    let selectedPlan = null;
-    let isPremium = false;
-
-    // Initialize Google Sign-In
-    function initializeGoogleSignIn() {
-      google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-        callback: handleCredentialResponse
-      });
-      
-      google.accounts.id.renderButton(
-        document.getElementById("googleSignInButton"),
-        { theme: "outline", size: "large", text: "signin_with" }
-      );
+    function getCurrentTime() {
+      const now = new Date();
+      let hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; // the hour '0' should be '12'
+      return `${hours}:${minutes} ${ampm}`;
     }
 
-    // Handle Google Sign-In response
-    function handleCredentialResponse(response) {
-      // Verify the credential with your backend
-      fetch('/verify-google-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ credential: response.credential })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          currentUser = data.user;
-          isPremium = data.user.isPremium || false;
-          updateUI();
-          hideLoginModal();
-          showToast('Signed in successfully!');
-          
-          // Check subscription status
-          checkSubscriptionStatus();
-        } else {
-          showToast('Sign in failed. Please try again.');
-        }
-      })
-      .catch(error => {
+    async function sendMessage() {
+      var input = document.getElementById("input");
+      var message = input.value.trim();
+      if (message === "") return;
+
+      var chat = document.getElementById("chat");
+
+      // Create user message
+      var userMessage = document.createElement("div");
+      userMessage.className = "message user";
+      userMessage.innerHTML = `
+        <div>You: ${message}</div>
+        <div class="timestamp">${getCurrentTime()}</div>
+      `;
+      chat.appendChild(userMessage);
+
+      // Clear input
+      input.value = "";
+      
+      // Create loading message
+      var botMessage = document.createElement("div");
+      botMessage.className = "message bot";
+      botMessage.innerHTML = `
+        <div>NOVA: <span class="message-typing"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span></div>
+      `;
+      chat.appendChild(botMessage);
+
+      // Scroll to bottom
+      chat.scrollTop = chat.scrollHeight;
+
+      try {
+        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC1N4MhOwSoSho4WLWfnsRyNMPmyMbfuaw', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{ text: message }]
+            }]
+          })
+        });
+
+        const data = await response.json();
+        const botReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand your request. Could you please rephrase it?";
+
+        // Update bot message with actual response
+        botMessage.innerHTML = `
+          <div>NOVA: ${botReply}</div>
+          <div class="timestamp">${getCurrentTime()}</div>
+        `;
+      } catch (error) {
+        botMessage.innerHTML = `
+          <div>NOVA: Sorry, I'm having trouble connecting right now. Please try again later.</div>
+          <div class="timestamp">${getCurrentTime()}</div>
+        `;
         console.error('Error:', error);
-        showToast('Sign in failed. Please try again.');
-      });
-    }
-
-    // Check subscription status
-    function checkSubscriptionStatus() {
-      if (!currentUser) return;
-      
-      fetch('/check-subscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userId: currentUser.id })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.isActive) {
-          isPremium = true;
-          updateUI();
-          showToast('Premium subscription active!');
-        }
-      })
-      .catch(error => {
-        console.error('Error checking subscription:', error);
-      });
-    }
-
-    // Logout function
-    function logout() {
-      currentUser = null;
-      isPremium = false;
-      updateUI();
-      showToast('Signed out successfully');
-      
-      // Google Sign-Out
-      google.accounts.id.disableAutoSelect();
-    }
-
-    // Update UI based on auth state
-    function updateUI() {
-      const loginBtn = document.getElementById('loginBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const premiumBtn = document.getElementById('premiumBtn');
-      
-      if (currentUser) {
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'block';
-        premiumBtn.style.display = 'block';
-        
-        if (isPremium) {
-          premiumBtn.innerHTML = '<i class="fas fa-crown"></i> Premium Member';
-        } else {
-          premiumBtn.innerHTML = '<i class="fas fa-crown"></i> Go Premium';
-        }
-      } else {
-        loginBtn.style.display = 'block';
-        logoutBtn.style.display = 'none';
-        premiumBtn.style.display = 'none';
-      }
-    }
-
-    // Show login modal
-    function showLoginModal() {
-      document.getElementById('loginModal').style.display = 'flex';
-    }
-
-    // Hide login modal
-    function hideLoginModal() {
-      document.getElementById('loginModal').style.display = 'none';
-    }
-
-    // Show premium modal
-    function showPremiumModal() {
-      if (!currentUser) {
-        showLoginModal();
-        return;
       }
       
-      if (isPremium) {
-        showToast('You are already a premium member!');
-        return;
-      }
-      
-      document.getElementById('premiumModal').style.display = 'flex';
+      // Scroll to bottom again after response
+      chat.scrollTop = chat.scrollHeight;
     }
-
-    // Hide premium modal
-    function hidePremiumModal() {
-      document.getElementById('premiumModal').style.display = 'none';
-    }
-
-    // Select subscription plan
-    function selectPlan(plan) {
-      selectedPlan = plan;
-      document.querySelectorAll('.plan-card').forEach(card => {
-        card.classList.remove('selected');
-      });
-      document.getElementById(`${plan}Plan`).classList.add('selected');
-    }
-
-    // Subscribe to premium
-    function subscribe() {
-      if (!selectedPlan) {
-        showToast('Please select a plan');
-        return;
-      }
-      
-      // In a real app, you would integrate with a payment processor here
-      // This is just a simulation
-      fetch('/create-subscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          userId: currentUser.id,
-          plan: selectedPlan 
-        })
-      })
-      .then(res => res.json())
-      .then(dat
+  </script>
+</body>
+</html>
