@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>NOVA AI Chat</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -24,6 +24,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -36,25 +37,32 @@
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
+      touch-action: manipulation;
     }
 
-    /* REPLACED HEADER WITH IMAGE */
+    /* MOBILE-OPTIMIZED IMAGE HEADER */
     .image-header {
       text-align: center;
-      padding: 10px;
+      padding: 8px;
+      background: var(--bg-darker);
+      position: relative;
+      z-index: 10;
     }
     .image-header a {
-      display: inline-block;
+      display: block;
+      width: 100%;
     }
     .image-header img {
-      max-width: 100%;
+      width: 100%;
+      max-width: 500px;
       height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: transform 0.3s ease;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
     }
-    .image-header img:hover {
-      transform: scale(1.02);
+    .image-header img:active {
+      transform: scale(0.98);
     }
 
     .chat-container {
@@ -66,39 +74,30 @@
 
     .chat-box {
       flex: 1;
-      padding: 20px;
+      padding: 12px 10px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
       background: var(--bg-darker);
-      scrollbar-width: thin;
-      scrollbar-color: var(--primary) var(--bg-light);
+      scrollbar-width: none;
     }
 
     .chat-box::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .chat-box::-webkit-scrollbar-track {
-      background: var(--bg-light);
-    }
-
-    .chat-box::-webkit-scrollbar-thumb {
-      background-color: var(--primary);
-      border-radius: 3px;
+      display: none;
     }
 
     .message {
-      margin: 8px 0;
-      padding: 12px 16px;
-      border-radius: 18px;
-      max-width: 85%;
-      line-height: 1.5;
+      margin: 6px 0;
+      padding: 10px 14px;
+      border-radius: 16px;
+      max-width: 90%;
+      line-height: 1.4;
+      font-size: 15px;
       position: relative;
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(8px);
       animation: fadeIn 0.3s ease forwards;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      word-break: break-word;
     }
 
     @keyframes fadeIn {
@@ -113,6 +112,7 @@
       color: white;
       align-self: flex-end;
       border-bottom-right-radius: 4px;
+      margin-left: 10%;
     }
 
     .message.bot {
@@ -120,6 +120,7 @@
       color: var(--text-primary);
       align-self: flex-start;
       border-bottom-left-radius: 4px;
+      margin-right: 10%;
     }
 
     .message.greeting {
@@ -131,12 +132,12 @@
     .message-typing {
       display: inline-flex;
       align-items: center;
-      height: 20px;
+      height: 18px;
     }
 
     .typing-dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background: var(--text-secondary);
       border-radius: 50%;
       margin: 0 2px;
@@ -155,34 +156,34 @@
 
     @keyframes typingAnimation {
       0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-5px); }
+      30% { transform: translateY(-4px); }
     }
 
     .input-area {
       background: var(--bg-light);
-      padding: 15px;
+      padding: 12px 10px;
       border-top: 1px solid var(--border);
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+      position: sticky;
+      bottom: 0;
     }
 
     .input-box {
       display: flex;
       align-items: center;
       background: var(--bg-dark);
-      border-radius: 25px;
-      padding: 5px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 22px;
+      padding: 4px;
     }
 
     .input-box input {
       flex: 1;
-      padding: 12px 20px;
+      padding: 10px 16px;
       border: none;
       outline: none;
-      font-size: 16px;
+      font-size: 15px;
       background: transparent;
       color: var(--text-primary);
-      border-radius: 25px;
+      border-radius: 22px;
     }
 
     .input-box input::placeholder {
@@ -191,8 +192,8 @@
     }
 
     .input-box button {
-      width: 48px;
-      height: 48px;
+      width: 42px;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -201,75 +202,67 @@
       border: none;
       border-radius: 50%;
       cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .input-box button:hover {
-      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-      transform: translateY(-2px);
-    }
-
-    .input-box button:active {
-      transform: translateY(0);
+      flex-shrink: 0;
     }
 
     .social-links {
       display: flex;
       justify-content: center;
-      gap: 25px;
-      padding: 15px 0 5px;
+      gap: 20px;
+      padding: 12px 0 5px;
     }
 
     .social-links a {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: rgba(255,255,255,0.1);
-      transition: all 0.3s ease;
-    }
-
-    .social-links a:hover {
-      background: rgba(255,255,255,0.2);
-      transform: translateY(-3px);
     }
 
     .social-links a img {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       filter: brightness(0) invert(1);
     }
 
     .timestamp {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-secondary);
-      margin-top: 4px;
+      margin-top: 3px;
       text-align: right;
     }
 
-    @media (max-width: 600px) {
+    /* Larger screens adjustments */
+    @media (min-width: 600px) {
+      .image-header {
+        padding: 12px;
+      }
+      .image-header img {
+        max-width: 400px;
+      }
+      .chat-box {
+        padding: 15px 20px;
+      }
       .message {
-        max-width: 90%;
-        padding: 10px 14px;
+        max-width: 85%;
+        padding: 12px 16px;
+        font-size: 16px;
       }
-      
+      .input-area {
+        padding: 15px;
+      }
       .input-box input {
-        padding: 10px 16px;
-        font-size: 15px;
-      }
-      
-      .input-box button {
-        width: 42px;
-        height: 42px;
+        padding: 12px 18px;
+        font-size: 16px;
       }
     }
   </style>
 </head>
 <body>
-  <!-- REPLACED HEADER WITH YOUR IMAGE -->
+  <!-- Image Header -->
   <div class="image-header">
     <a href="https://www.mediafire.com/file/p1aeomhouzujf3j/GUES+THE+FALG.apk/file" target="_blank">
       <img src="https://i.ibb.co/xttTCVWY/wmremove-transformed.jpg" alt="Download Guess The Flag APK">
@@ -279,7 +272,7 @@
   <div class="chat-container">
     <div id="chat" class="chat-box">
       <div class="message bot greeting">
-        <div>NOVA: Hello! I'm your AI assistant. How can I help you today?</div>
+        <div>Hello! I'm your AI assistant. How can I help you today?</div>
         <div class="timestamp">Just now</div>
       </div>
     </div>
@@ -289,7 +282,7 @@
     <div class="input-box">
       <input type="text" id="input" placeholder="Type your message..." onkeydown="if(event.key==='Enter'){ sendMessage(); }"/>
       <button onclick="sendMessage()" title="Send">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -315,38 +308,36 @@
       const minutes = now.getMinutes().toString().padStart(2, '0');
       const ampm = hours >= 12 ? 'PM' : 'AM';
       hours = hours % 12;
-      hours = hours ? hours : 12; // the hour '0' should be '12'
+      hours = hours ? hours : 12;
       return `${hours}:${minutes} ${ampm}`;
     }
 
     async function sendMessage() {
-      var input = document.getElementById("input");
-      var message = input.value.trim();
+      const input = document.getElementById("input");
+      const message = input.value.trim();
       if (message === "") return;
 
-      var chat = document.getElementById("chat");
+      const chat = document.getElementById("chat");
 
-      // Create user message
-      var userMessage = document.createElement("div");
+      // User message
+      const userMessage = document.createElement("div");
       userMessage.className = "message user";
       userMessage.innerHTML = `
-        <div>You: ${message}</div>
+        <div>${message}</div>
         <div class="timestamp">${getCurrentTime()}</div>
       `;
       chat.appendChild(userMessage);
 
-      // Clear input
       input.value = "";
       
-      // Create loading message
-      var botMessage = document.createElement("div");
+      // Loading indicator
+      const botMessage = document.createElement("div");
       botMessage.className = "message bot";
       botMessage.innerHTML = `
-        <div>NOVA: <span class="message-typing"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span></div>
+        <div><span class="message-typing"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></span></div>
       `;
       chat.appendChild(botMessage);
 
-      // Scroll to bottom
       chat.scrollTop = chat.scrollHeight;
 
       try {
@@ -365,22 +356,25 @@
         const data = await response.json();
         const botReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand your request. Could you please rephrase it?";
 
-        // Update bot message with actual response
         botMessage.innerHTML = `
-          <div>NOVA: ${botReply}</div>
+          <div>${botReply}</div>
           <div class="timestamp">${getCurrentTime()}</div>
         `;
       } catch (error) {
         botMessage.innerHTML = `
-          <div>NOVA: Sorry, I'm having trouble connecting right now. Please try again later.</div>
+          <div>Sorry, I'm having trouble connecting right now. Please try again later.</div>
           <div class="timestamp">${getCurrentTime()}</div>
         `;
         console.error('Error:', error);
       }
       
-      // Scroll to bottom again after response
       chat.scrollTop = chat.scrollHeight;
     }
+
+    // Auto-focus input on load
+    window.addEventListener('load', () => {
+      document.getElementById('input').focus();
+    });
   </script>
 </body>
 </html>
